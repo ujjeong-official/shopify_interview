@@ -1,4 +1,4 @@
-Hi!
+Hi,
 
 Welcome to Shopify Interview!
 
