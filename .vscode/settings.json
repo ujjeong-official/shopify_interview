@@ -1,0 +1,4 @@
+{
+  // Disable all inline ghost text suggestions (affects all providers, including Copilot) in this workspace
+  "editor.inlineSuggest.enabled": false
+}
