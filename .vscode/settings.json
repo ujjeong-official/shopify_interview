@@ -1,4 +1,11 @@
 {
-  // Disable all inline ghost text suggestions (affects all providers, including Copilot) in this workspace
-  "editor.inlineSuggest.enabled": false
+  // Disable inline ghost text suggestions (e.g., Copilot) but keep IntelliSense auto-complete
+  "editor.inlineSuggest.enabled": false,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.acceptSuggestionOnEnter": "on"
 }
