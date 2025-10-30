@@ -27,10 +27,10 @@ The AuthAPI issues a token using their private key, which stays secured on their
 **Step 2: Token Verification**
 Our middleware intercepts the request and calls the JWKS endpoint—that's JSON Web Key Set—to retrieve the public key. We then use this public key to decode the JWT.
 
-Now, let me talk about why we chose an **asymmetric encryption pattern** instead of symmetric encryption. In symmetric encryption, both the issuer and receivers share a common secret key. But with asymmetric encryption, only the issuer can sign using their private key, while receivers can only verify using the public key. Since we don't need to issue tokens—we only need to receive and verify them. This approach is much more secure, especially when it comes to key distribution.
+Now, let me talk about why we chose an **asymmetric encryption pattern** instead of symmetric encryption. In symmetric encryption, both the issuer and receivers share a common secret key. But with asymmetric encryption, only the issuer can sign using their private key, while receivers can only verify using the public key. Since we don't need to issue tokens to any downstreams — we only need to receive and verify them. This approach is much more secure, especially when it comes to key distribution.
 
-**Step 3: Caching for Performance**
-After verifying the signature, checking expiration, and validating the issuer, we cache the public key. Here's why this matters: the public key is short-lived. It only lasts for 5 minutes. We didn't want the middleware to become a bottleneck, so we implemented caching with a specific TTL. This way, when users log in again, we can reuse the cached key. The performance improvement is significant: fetching the public key from the JWKS endpoint takes about 300ms, but retrieving it from cache takes under 1ms. That's like a 300x performance boost.
+**Step 3: Caching for Better Performance**
+After verifying the signature, checking expiration, and validating the issuer, we cache the public key. Here's why this matters: the public key is short-lived in our system. It only lasts for 5 minutes. We didn't want the middleware to become a bottleneck, so we implemented caching with a specific TTL. This way, when users log in again, we can reuse the cached key. The performance improvement is significant: fetching the public key from the JWKS endpoint takes about 300ms, but retrieving it from cache takes under 1ms. That's like a 300x performance boost.
 
 ### What This Solution Gives Us
 
@@ -43,11 +43,11 @@ This approach provides three critical capabilities:
 
 We also evaluated an alternative approach: using Google OAuth with stored tokens: both long-lived refresh tokens and short-lived access tokens. On subsequent logins, we'd verify users using the stored token.
 
-However, this approach had several drawbacks:
+but, this approach had several drawbacks:
 
 * **External dependency risk** - We'd be relying on an external authentication layer that's completely out of our control. If Google's services go down, our platform is impacted.
 * **Complex token management** - We'd need additional mechanisms for hashing tokens (we do not want to store the user's token directly into our DB or cache), refreshing tokens, handling external API calls, and managing all the error handling and account issues that come with that.
-* **Limited authorization control** - The biggest issue: OAuth alone only achieves authentication. It does prevent the labels from seeing other labels' data but it doesn't give us granular control over what each user can do within the platform. That's why we chose to go with JWT. It gives us both AuthN and AuthZ in one solution.
+* **Limited authorization control** - The biggest issue: OAuth alone only achieves authentication. It does prevent the labels from seeing other labels' data but it doesn't give us granular control over what each user can do within the platform. That's why we chose to go with JWT at this point. It gives us both AuthN and AuthZ in one solution.
 
 ## LESSONS LEARNED
 
